@@ -2,6 +2,10 @@ import sys
 import importlib
 import inspect
 
+max_number_of_rounds = 2500
+target_score = 1000
+starting_number_of_dynamite = 100
+
 if len(sys.argv) not in [2,3]:
     print('Run "python bot_runner.py example_bot" for example, to test a file called "example_bot.py" against the PaperBot')
     print('Or run "python bot_runner.py bot_one bot_two" to test a bot in bot_one.py against bot_two.py')
@@ -44,19 +48,19 @@ def main():
     players = [{
         'bot': get_bot_class_from_module(player_module)(),
         'score': 0,
-        'dynamite': 100,
+        'dynamite': starting_number_of_dynamite,
         'name': 'YOU'
     }, {
         'bot': get_bot_class_from_module(opponent_module)(),
         'score': 0,
-        'dynamite': 100,
+        'dynamite': starting_number_of_dynamite,
         'name': 'opponent'
     }]
     gamestate = { 'rounds': [] }
     round_number = 1
     round_value = 1
 
-    while all(p['score'] < 1000 for p in players) and round_number <= 2500:
+    while all(p['score'] < target_score for p in players) and round_number <= max_number_of_rounds:
         for p in players:
             p['move'] = p['bot'].make_move(gamestate)
             check_dynamite_supply(p)
