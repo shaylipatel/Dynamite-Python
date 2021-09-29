@@ -8,7 +8,7 @@ if len(sys.argv) not in [2,3]:
     exit()
 
 def get_bot_class_from_module(module_name):
-    module = importlib.import_module(module_name.strip('.py'))
+    module = importlib.import_module(module_name.rstrip('.py'))
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
             return obj
