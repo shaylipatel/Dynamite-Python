@@ -1,6 +1,6 @@
 import random
 
-class ExampleBot:
+class DynamiteBot:
     def __init__(self):
         self.dynamite = 100
 

@@ -2,9 +2,10 @@ import sys
 import importlib
 import inspect
 
-max_number_of_rounds = 2500
-target_score = 1000
-starting_number_of_dynamite = 100
+DEFAULT_OPPONENT = 'example_function_bot'
+MAX_NUMBER_OF_ROUNDS = 2500
+TARGET_SCORE = 1000
+STARTING_NUMBER_OF_DYNAMITE = 100
 
 if len(sys.argv) not in [2,3]:
     print('Run "python bot_runner.py example_bot" for example, to test a file called "example_bot.py" against the PaperBot')
@@ -17,7 +18,14 @@ def get_bot_class_from_module(module_name):
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
             return obj
-    raise ImportError('No class found in file ' + module_name)
+    
+    if hasattr(module, 'make_move'):
+        class WrapperBot:
+            def make_move(self, gamestate):
+                return module.make_move(gamestate['rounds'])
+        return WrapperBot
+
+    raise ImportError(f'{module_name} does not contain a class or a make_move function')
 
 def player_one_wins_round(p1_move, p2_move):
     for move in [p1_move, p2_move]:
@@ -43,29 +51,31 @@ def check_dynamite_supply(player):
 
 def main():
     player_module = sys.argv[1]
-    opponent_module = sys.argv[2] if len(sys.argv) == 3 else 'paper_bot'
+    opponent_module = sys.argv[2] if len(sys.argv) == 3 else DEFAULT_OPPONENT
 
     players = [{
         'bot': get_bot_class_from_module(player_module)(),
         'score': 0,
-        'dynamite': starting_number_of_dynamite,
-        'name': 'YOU'
+        'dynamite': STARTING_NUMBER_OF_DYNAMITE,
+        'name': 'YOU',
+        'gamestate': { 'rounds': [] }
     }, {
         'bot': get_bot_class_from_module(opponent_module)(),
         'score': 0,
-        'dynamite': starting_number_of_dynamite,
-        'name': 'opponent'
+        'dynamite': STARTING_NUMBER_OF_DYNAMITE,
+        'name': 'opponent',
+        'gamestate': { 'rounds': [] }
     }]
-    gamestate = { 'rounds': [] }
     round_number = 1
     round_value = 1
 
-    while all(p['score'] < target_score for p in players) and round_number <= max_number_of_rounds:
+    while all(p['score'] < TARGET_SCORE for p in players) and round_number <= MAX_NUMBER_OF_ROUNDS:
         for p in players:
-            p['move'] = p['bot'].make_move(gamestate)
+            p['move'] = p['bot'].make_move(p['gamestate'])
             check_dynamite_supply(p)
         p1_move, p2_move = players[0]['move'], players[1]['move']
-        gamestate['rounds'].append({'p1': p1_move, 'p2': p2_move})
+        players[0]['gamestate']['rounds'].append({'p1': p1_move, 'p2': p2_move})
+        players[1]['gamestate']['rounds'].append({'p1': p2_move, 'p2': p1_move})
 
         if players[0]['move'] == players[1]['move']:
             round_value += 1
