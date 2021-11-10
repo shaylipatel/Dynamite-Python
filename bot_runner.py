@@ -14,6 +14,7 @@ if len(sys.argv) not in [2,3]:
 
 def get_bot_class_from_module(module_name):
     if module_name[-3:] == '.py': module_name = module_name[0:-3]
+    if module_name[0:2] == "./" or module_name[0:2] == ".\\": module_name = module_name[2:]
     module = importlib.import_module(module_name)
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj):
