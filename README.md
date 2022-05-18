@@ -1,6 +1,6 @@
 ## Dynamite Bot runner (in Python)
 
-This repository contains a test harness for the game of [Dynamite!](https://dynamite.softwire.com/), plus some simple example bots.
+This repository contains a test harness for the game of Dynamite!, plus some simple example bots.
 
 ### Rules of the game
 
