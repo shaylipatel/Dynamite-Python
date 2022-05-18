@@ -49,5 +49,3 @@ If you would like to practise writing a class, you can do so. See [example_class
     'rounds': [ {'p1': 'R', 'p2': 'P'}, etc ]
 }
 ```
-
-To find new opponents, either share your Python files with each other, or if you define your bot as a class, you can upload it to the website: <https://dynamite.softwire.com/bots>
